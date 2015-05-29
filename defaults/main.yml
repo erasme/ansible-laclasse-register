@@ -1,0 +1,17 @@
+# General laclasse defines
+
+## Environment we're running under
+laclasse_environment: develop
+
+## Main server URL
+laclasse_main_url: http://www.example.org
+
+## Slack notifications parameters
+laclasse_slack:
+  host: localhost
+  channel: none
+  token: none
+
+laclasse_annuaire_main_path: 'api'
+
+

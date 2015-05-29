@@ -1,0 +1,23 @@
+- name: Send notification message via Slack
+  local_action:
+    module: slack
+    domain: "{{ laclasse_slack.host }}"
+    token: "{{ laclasse_slack.token }}"
+    msg: "3...2...1... registering application {{ application }} v{{ laclasse_services[application]['version'] }} :rocket: "
+    channel: "{{ laclasse_slack.channel }}"
+  tags:
+    - laclasse
+    - laclasse:register
+
+- include: register_application.yml tags=laclasse,laclasse:register
+
+- name: Send notification message via Slack
+  local_action:
+    module: slack
+    domain: "{{ laclasse_slack.host }}"
+    token: "{{ laclasse_slack.token }}"
+    msg: "registered application {{ application }} with annuaire successfully :thumbsup:"
+    channel: "{{ laclasse_slack.channel }}"
+  tags:
+    - laclasse
+    - laclasse:register
