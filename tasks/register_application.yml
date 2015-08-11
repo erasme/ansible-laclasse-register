@@ -1,40 +1,43 @@
 - name: Installs prereqs
-  apt: >
-    pkg=python-httplib2
-    state=installed
+  apt: pkg=python-httplib2 state=installed
 
 - name: Registers app with annuaire
-  uri: >
-    method=POST
-    HEADER_Accept="application/json, text/javascript, */*; q=0.01"
-    HEADER_Content-Type="application/x-www-form-urlencoded"
-    status_code=201
-    url={{ laclasse.main_url }}{{ laclasse_annuaire_main_path}}/ansible/application?api_key={{ laclasse_services.annuaire.secret_key }}
-    body="libelle={{ laclasse_services[application]['title'] }}&code={{ laclasse_services[application]['app_id'] }}&description={{ laclasse_services[application]['description'] | urlencode }}&url={{ [ laclasse.main_url, laclasse_services[application]['path'] ] | join('/') | regex_replace('\/+', '/') | regex_replace(':\/', '://') }}"
-  register: app_register
+  uri:
+    method: POST
+    HEADER_Accept: "application/json, text/javascript, */*; q=0.01"
+    HEADER_Content-Type: "application/x-www-form-urlencoded"
+    status_code: 201
+    url: "{{ laclasse_main_url }}/{{ laclasse_annuaire_main_path }}/ansible/application?api_key={{ laclasse_annuaire_secret_key }}"
+#    body: "libelle={{ app_title }}&code={{ app_id }}&description={{ app_description }}&url={{ [ laclasse_main_url, app_path ] | join('/') | regex_replace('\/+', '/') | regex_replace(':\/', '://') }}"
+    body: "libelle={{ app_title }}&code={{ app_id }}&description={{ app_description }}&url={{ app_ressource_url_sanitized }}"
+  register: __register_app
   ignore_errors: yes
-  changed_when: app_register.json.changed
+#  changed_when: __register_app.json.changed
 
 - name: Registers ressource with annuaire
-  uri: >
-    method=POST
-    HEADER_Accept="application/json, text/javascript, */*; q=0.01"
-    HEADER_Content-Type="application/x-www-form-urlencoded"
-    status_code=201
-    url={{ laclasse_main_url }}{{ laclasse_annuaire_main_path}}/ansible/ressource?api_key={{ laclasse_services.annuaire.secret_key }}
-    body="service_id=APP&id={{ laclasse_services.docs.app_id }}"
-  register: ressource_register
-  ignore_errors: yes  
-  changed_when: ressource_register.json.changed
+  uri:
+    method: POST
+    HEADER_Accept: "application/json, text/javascript, */*; q=0.01"
+    HEADER_Content-Type: "application/x-www-form-urlencoded"
+    status_code: 201
+    url: "{{ laclasse_main_url }}/{{ laclasse_annuaire_main_path }}/ansible/ressource?api_key={{ laclasse_annuaire_secret_key }}"
+    body: "service_id=APP&id={{ laclasse_services[application]['app_id'] }}"
+  register: __register_ressource
+  ignore_errors: yes
+#  changed_when: __register_ressource.json.changed
+
+- debug: __register_ressource
 
 - name: Registers api key with annuaire
-  uri: >
-    method=POST
-    url={{ laclasse.main_url }}{{ laclasse_annuaire_main_path}}/ansible/application_key?api_key={{ laclasse_services.annuaire.secret_key }}
-    body="application_key={{ laclasse_services.docs.api_key | urlencode }}&application_id={{ laclasse_services.docs.app_id }}"
-    HEADER_Accept="application/json, text/javascript, */*; q=0.01"
-    HEADER_Content-Type="application/x-www-form-urlencoded"
-    status_code=201
-  register: api_key_register
-  ignore_errors: yes  
-  changed_when: api_key_register.json.changed
+  uri:
+    method: POST
+    url: "{{ laclasse_main_url }}/{{ laclasse_annuaire_main_path }}/ansible/application_key?api_key={{ laclasse_annuaire_secret_key }}"
+    body: "application_key={{ app_key }}&application_id={{ app_id | upper }}&validity_duration=0&application_secret="
+    HEADER_Accept: "application/json, text/javascript, */*; q=0.01"
+    HEADER_Content-Type: "application/x-www-form-urlencoded"
+    status_code: 201
+  register: __register_api_key
+  ignore_errors: yes
+#  changed_when: __register_api.json.changed
+
+- debug: __register_api
