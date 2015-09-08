@@ -1,7 +1,8 @@
 - name: Installs prereqs
   apt: pkg=python-httplib2 state=installed
 
-- debug: msg="Register endpoint: {{ laclasse_main_url  }}/{{ laclasse_annuaire_main_path  }}/ansible/application?api_key={{ laclasse_annuaire_secret_key  }}"
+- debug: msg="Register endpoint {{ laclasse_main_url  }}/{{ laclasse_annuaire_main_path  }}/ansible/application?api_key={{ laclasse_annuaire_secret_key  }}"
+
 - name: Registers app with annuaire
   uri:
     method: POST
