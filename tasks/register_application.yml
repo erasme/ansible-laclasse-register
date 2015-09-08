@@ -1,6 +1,7 @@
 - name: Installs prereqs
   apt: pkg=python-httplib2 state=installed
 
+- debug: msg="Register endpoint: {{ laclasse_main_url  }}/{{ laclasse_annuaire_main_path  }}/ansible/application?api_key={{ laclasse_annuaire_secret_key  }}"
 - name: Registers app with annuaire
   uri:
     method: POST
@@ -8,7 +9,6 @@
     HEADER_Content-Type: "application/x-www-form-urlencoded"
     status_code: 201
     url: "{{ laclasse_main_url }}/{{ laclasse_annuaire_main_path }}/ansible/application?api_key={{ laclasse_annuaire_secret_key }}"
-#    body: "libelle={{ app_title }}&code={{ app_id }}&description={{ app_description }}&url={{ [ laclasse_main_url, app_path ] | join('/') | regex_replace('\/+', '/') | regex_replace(':\/', '://') }}"
     body: "libelle={{ app_title }}&code={{ app_id }}&description={{ app_description }}&url={{ app_ressource_url_sanitized }}"
   register: __register_app
   ignore_errors: yes
